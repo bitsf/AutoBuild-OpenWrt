@@ -25,6 +25,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         set +e
+        df -h
         docker rmi `docker images -q`
         echo "Deleting files, please wait ..."
         sudo rm -rf \
@@ -44,6 +45,7 @@ jobs:
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
       run: |
+        df -h
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
         echo "src-git ssrp https://github.com/fw876/helloworld.git" >> ./feeds.conf.default
@@ -51,6 +53,7 @@ jobs:
     - name: Update & Install feeds
       working-directory: ./openwrt
       run: |
+        df -h
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a
@@ -70,6 +73,7 @@ jobs:
       env:
         CONFIG_FILE: 'x86_64.config'
       run: |
+        df -h
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
@@ -77,6 +81,7 @@ jobs:
     - name: Download package
       working-directory: ./openwrt
       run: |
+        df -h
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -84,6 +89,7 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
+        df -h
         echo -e "$(nproc) thread build."
         make -j$(nproc) V=s
 
